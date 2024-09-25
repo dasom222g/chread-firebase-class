@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import InputField from "../components/InputField";
 import LoginButton from "../components/LoginButton";
 import { Link } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
 const SignUp = () => {
   // logic
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (inputValue, field) => {
     if (field === "name") {
@@ -19,11 +23,33 @@ const SignUp = () => {
     }
   };
 
-  const handleSignUp = (event) => {
+  const handleSignUp = async (event) => {
     event.preventDefault(); // 폼 제출시 새로고침 방지 메소드
+
+    // 사용자가 name, emaill, password값 작성 안하면 실행안함
+    if (!name || !email || !password) return;
     console.log("name", name);
     console.log("email", email);
     console.log("password", password);
+
+    try {
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("🚀 ~credential:", credential);
+      // 비동기 처리 성공시
+    } catch (error) {
+      // 비동기 처리에서 에러난 경우
+      console.error("code!!", error.code);
+      console.error(error.message);
+      setErrorMessage(
+        error.code === "auth/weak-password"
+          ? "비밀번호 6자리 이상 입력해주세요"
+          : error.message
+      );
+    }
   };
 
   // view
@@ -49,6 +75,7 @@ const SignUp = () => {
             field="password"
             onChange={handleInputChange}
           />
+          {errorMessage && <p className="text-red-600">{errorMessage}</p>}
           <LoginButton category="login" text="Create Account" />
         </form>
         {/* END: 폼 영역 */}
