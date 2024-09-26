@@ -52,7 +52,7 @@ const Login = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault(); // 폼 제출시 새로고침 방지 메소드
-    // TODO: 로그인 기능
+    // 로그인 기능
 
     setErrorMessage("");
 
