@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Edit from "./pages/Edit";
 import { auth } from "./firebase";
 import { delay } from "./lib/common";
+import Private from "./pages/Private";
 
 function App() {
   // logic
@@ -47,29 +48,34 @@ function App() {
         <div className="max-w-[572px] mx-auto h-full">
           <BrowserRouter>
             <Routes>
-              <Route
-                path="/"
-                element={
-                  <Home
-                    churead={churead}
-                    editedItem={editedItem}
-                    onEdit={(data) => setEditItem(data)}
-                  />
-                }
-              />
+              {/* START: 로그인 사용자만 접근 가능 페이지 */}
+              <Route path="/" element={<Private />}>
+                <Route
+                  path=""
+                  element={
+                    <Home
+                      churead={churead}
+                      editedItem={editedItem}
+                      onEdit={(data) => setEditItem(data)}
+                    />
+                  }
+                />
+                <Route path="post" element={<Post onPost={handlePost} />} />
+                <Route
+                  path="edit"
+                  element={
+                    <Edit
+                      editItem={editItem}
+                      onEdited={(data) => setEditedItem(data)}
+                    />
+                  }
+                />
+                <Route path="profile" element={<Profile />} />
+              </Route>
+              {/* END: 로그인 사용자만 접근 가능 페이지 */}
+
               <Route path="/login" element={<Login />} />
               <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/post" element={<Post onPost={handlePost} />} />
-              <Route
-                path="/edit"
-                element={
-                  <Edit
-                    editItem={editItem}
-                    onEdited={(data) => setEditedItem(data)}
-                  />
-                }
-              />
-              <Route path="/profile" element={<Profile />} />
             </Routes>
           </BrowserRouter>
         </div>

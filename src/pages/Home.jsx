@@ -4,6 +4,7 @@ import Nav from "../components/layout/Nav";
 import FeedItem from "../components/FeedItem";
 import { initialFeedList } from "../data/response";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
 
 const Home = ({ churead, editedItem, onEdit }) => {
   // logic
@@ -42,6 +43,23 @@ const Home = ({ churead, editedItem, onEdit }) => {
     setFeedList(filterList);
   };
 
+  const handleLogout = async () => {
+    const ok = window.confirm("정말 로그아웃 하시겠습니까?");
+
+    if (!ok) return; // 아니요 선택시 다음 줄 실행안함
+
+    // TODO: 1. 파이어베이스에게 로그아웃 요청
+    try {
+      // await signOut(auth)
+      await auth.signOut();
+    } catch (error) {
+      console.error(error);
+    }
+
+    // TODO: 2. 로그인 화면으로 리다이렉트
+    history("/login");
+  };
+
   // 진입시 딱 한번 실행
   useEffect(() => {
     if (!churead) return;
@@ -73,7 +91,7 @@ const Home = ({ churead, editedItem, onEdit }) => {
   return (
     <div className="h-full pt-20 pb-[74px] overflow-hidden">
       {/* START: 헤더 영역 */}
-      <Header />
+      <Header onLogout={handleLogout} />
       {/* END: 헤더 영역 */}
       <main className="h-full overflow-auto">
         <div>
