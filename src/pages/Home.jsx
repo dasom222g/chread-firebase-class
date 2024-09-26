@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/layout/Header";
 import Nav from "../components/layout/Nav";
 import FeedItem from "../components/FeedItem";
-import { initialFeedList } from "../data/response";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { collection, onSnapshot, query } from "firebase/firestore";
 
 const Home = ({ churead, editedItem, onEdit }) => {
   // logic
   const history = useNavigate();
 
-  const [feedList, setFeedList] = useState(initialFeedList);
+  const [feedList, setFeedList] = useState([]);
 
   // const delay = (ms) => {
   //   return new Promise((res) => setTimeout(res, ms));
@@ -60,6 +60,21 @@ const Home = ({ churead, editedItem, onEdit }) => {
     history("/login");
   };
 
+  const getLiveData = () => {
+    const collectionRef = collection(db, "chureads");
+
+    const chureadQuery = query(collectionRef);
+    // 실시간으로 데이터 가져오기
+    onSnapshot(chureadQuery, (snapshot) => {
+      const datas = snapshot.docs.map((item) => {
+        console.log("item=>", item.data());
+        return { id: item.id, ...item.data() };
+      });
+      // console.log("datas", datas);
+      setFeedList(datas);
+    });
+  };
+
   // 진입시 딱 한번 실행
   useEffect(() => {
     if (!churead) return;
@@ -74,6 +89,11 @@ const Home = ({ churead, editedItem, onEdit }) => {
     // feedList에 객체 추가
     setFeedList([newFeed, ...feedList]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 진입시 딱 한번 실행
+  useEffect(() => {
+    getLiveData();
   }, []);
 
   useEffect(() => {
