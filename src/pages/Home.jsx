@@ -4,10 +4,19 @@ import Nav from "../components/layout/Nav";
 import FeedItem from "../components/FeedItem";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 
 const Home = ({ editedItem, onEdit }) => {
   // logic
+  const user = auth.currentUser; // User | null
+
   const history = useNavigate();
 
   let unsubscribe = null;
@@ -40,9 +49,19 @@ const Home = ({ editedItem, onEdit }) => {
     history("/edit"); // edit페이지로 이동
   };
 
-  const handleDelete = (selectedItem) => {
-    const filterList = feedList.filter((item) => item.id !== selectedItem.id);
-    setFeedList(filterList);
+  const handleDelete = async (selectedItem) => {
+    // 글 작성자와 현재 로그인 유저가 다르면 실행안함
+    if (selectedItem.userId !== user.uid) return;
+
+    try {
+      // 파이어베이스에게 삭제 요청
+      await deleteDoc(doc(db, "chureads", selectedItem.id));
+    } catch (error) {
+      console.error(error);
+    }
+
+    console.log("🚀 ~ selectedItem:", selectedItem);
+    console.log("🚀 ~ user:", user);
   };
 
   const handleLogout = async () => {
