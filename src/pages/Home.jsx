@@ -8,9 +8,11 @@ import {
   collection,
   deleteDoc,
   doc,
+  increment,
   onSnapshot,
   orderBy,
   query,
+  updateDoc,
 } from "firebase/firestore";
 
 const Home = ({ editedItem, onEdit }) => {
@@ -87,10 +89,19 @@ const Home = ({ editedItem, onEdit }) => {
     const chureadQuery = query(collectionRef, orderBy("createAt", "desc"));
     // 실시간으로 데이터 가져오기
     unsubscribe = onSnapshot(chureadQuery, (snapshot) => {
+      console.log("🚀 ~ snapshot:", snapshot);
       const datas = snapshot.docs.map((item) => {
         return { id: item.id, ...item.data() };
       });
       setFeedList(datas);
+    });
+  };
+
+  const handleLike = async (selectedItem) => {
+    console.log("heart click");
+    // 파이어베이스에게 likeCount의 값을 1씩 증가시키기
+    await updateDoc(doc(db, "chureads", selectedItem.id), {
+      likeCount: increment(1),
     });
   };
 
@@ -130,8 +141,9 @@ const Home = ({ editedItem, onEdit }) => {
               <FeedItem
                 key={feed.id}
                 data={feed}
-                onDelete={handleDelete}
                 onEdit={handleEdit}
+                onDelete={handleDelete}
+                onLike={handleLike}
               />
             ))}
           </ul>
