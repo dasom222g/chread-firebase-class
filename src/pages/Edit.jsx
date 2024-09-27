@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PostInput from "../components/PostInput";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
-const Edit = ({ editItem, onEdited }) => {
+const Edit = ({ editItem }) => {
   // logic
   const history = useNavigate();
   const [churead, setChuread] = useState("");
@@ -11,11 +13,17 @@ const Edit = ({ editItem, onEdited }) => {
     setChuread(value);
   };
 
-  const handleEdit = (event) => {
+  const handleEdit = async (event) => {
     event.preventDefault(); // 폼 제출시 새로고침 방지 메소드
 
-    const editedItem = { ...editItem, churead };
-    onEdited(editedItem);
+    // const editedItem = { ...editItem, churead };
+
+    // 파이어베이스에게 수정 요청
+
+    await updateDoc(doc(db, "chureads", editItem.id), {
+      churead,
+    });
+
     history("/"); // home화면으로 이동
   };
 

@@ -13,7 +13,6 @@ import Private from "./pages/Private";
 function App() {
   // logic
   const [editItem, setEditItem] = useState(null);
-  const [editedItem, setEditedItem] = useState(null);
 
   // 로딩 상태
   const [isLoading, setIsLoading] = useState(true);
@@ -46,23 +45,10 @@ function App() {
               <Route path="/" element={<Private />}>
                 <Route
                   path=""
-                  element={
-                    <Home
-                      editedItem={editedItem}
-                      onEdit={(data) => setEditItem(data)}
-                    />
-                  }
+                  element={<Home onEdit={(data) => setEditItem(data)} />}
                 />
                 <Route path="post" element={<Post />} />
-                <Route
-                  path="edit"
-                  element={
-                    <Edit
-                      editItem={editItem}
-                      onEdited={(data) => setEditedItem(data)}
-                    />
-                  }
-                />
+                <Route path="edit" element={<Edit editItem={editItem} />} />
                 <Route path="profile" element={<Profile />} />
               </Route>
               {/* END: 로그인 사용자만 접근 가능 페이지 */}
