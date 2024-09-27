@@ -17,6 +17,15 @@ import {
 
 const Home = ({ editedItem, onEdit }) => {
   // logic
+  /**
+   * 피드 글 작성자인 경우만 edit, delete 버튼 보여주기
+   * 1. 로그인한 사용자의 id값 가져오기
+   * 2. 게시글의 작성자 id값 가져오기 (userId)
+   * 3. 두 id값을 비교하기
+   * 4. 비교한 값이 같을경우(true): 아이콘 보여주기
+   * 5. 비교한 값이 다를경우(fale): 아이콘 숨기기
+   */
+
   const user = auth.currentUser; // User | null
 
   const history = useNavigate();
@@ -89,10 +98,12 @@ const Home = ({ editedItem, onEdit }) => {
     const chureadQuery = query(collectionRef, orderBy("createAt", "desc"));
     // 실시간으로 데이터 가져오기
     unsubscribe = onSnapshot(chureadQuery, (snapshot) => {
-      console.log("🚀 ~ snapshot:", snapshot);
       const datas = snapshot.docs.map((item) => {
-        return { id: item.id, ...item.data() };
+        const data = item.data();
+        return { id: item.id, ...data, isAuthor: user.uid === data.userId };
       });
+      console.log("🚀 ~ datas ~ datas:", datas);
+
       setFeedList(datas);
     });
   };
