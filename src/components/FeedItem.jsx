@@ -49,7 +49,7 @@ const FeedItem = ({ data, onEdit, onDelete, onLike }) => {
             )}
             {/* END: 수정, 삭제 버튼 영역 */}
           </div>
-          <p className="pt-1">{churead}</p>
+          <p className="pt-1 whitespace-pre-wrap">{churead}</p>
           {/* START: 좋아요 영역 */}
           <div className="flex items-center gap-1">
             <button
